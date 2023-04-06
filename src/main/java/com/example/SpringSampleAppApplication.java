@@ -1,26 +1,27 @@
 package com.example;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.stereotype.Component;
-
-import java.io.Console;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.DriverManager;
-import javax.sql.DataSource;
-import org.springframework.core.env.Environment;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.curso.openshift.dto.PersonaEntradaDto;
+import com.curso.openshift.model.Persona;
+import com.curso.openshift.service.PersonaService;
 
 @SpringBootApplication
 public class SpringSampleAppApplication {
@@ -30,77 +31,61 @@ public class SpringSampleAppApplication {
 	}
 }
 
-
 @RestController
 @RequestMapping("/")
 @RefreshScope
 @Component
 class HomeRestController {
-
-	boolean healthy=true;
-    String hostname="";
-	public  HomeRestController(){
-		try {
-			hostname= "Hello World from " + InetAddress.getLocalHost().getHostName().toString();
-		}
-		catch (UnknownHostException ex){
-			hostname= "error";
-		}
-	}
-
-	@RequestMapping("/")
-	public String home(){
-         return "<h1>"+hostname+"</h1>";
-	}
-
-	@RequestMapping("/healthz")
-	public ResponseEntity healthz(){
-		if (healthy)
-			return new ResponseEntity(HttpStatus.ACCEPTED);
-		else
-			return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
-	}
-
-	@RequestMapping("/cancer")
-	public String cancer(){
-		healthy=false;
-		return "Killed "+hostname;
-	}
-
+	private static final Logger log = LoggerFactory.getLogger(HomeRestController.class);
 	@Autowired
-	private Environment env;
+	private PersonaService service;
 
-	@RequestMapping("/dbtest")
-	public String dbtest(){
+	boolean healthy = true;
+	String hostname = "";
 
-		String sql = "SELECT * FROM customer";
-		Connection conn = null;
-
+	public HomeRestController() {
 		try {
-			//String connURL="jdbc:mysql://"+env.getProperty("MYSQL_SERVICE_HOST")+":"+env.getProperty("MYSQL_SERVICE_PORT")+"/"+env.getProperty("MYSQL_DATABASE")+"?useSSL=false";
-			//System.out.println("URL:  "+connURL);
-			//conn =  DriverManager.getConnection(connURL,env.getProperty("MYSQL_USER"),env.getProperty("MYSQL_PASSWORD"));
-			conn =  DriverManager.getConnection(env.getProperty("spring.datasource.url"),env.getProperty("spring.datasource.username"),env.getProperty("spring.datasource.password"));
-                        System.out.println("connection url: "+env.getProperty("spring.datasource.url"));
-			//System.out.println("Username: "+env.getProperty("spring.datasource.username")+"\nPassword: "+env.getProperty("spring.datasource.password"));
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ResultSet rs = ps.executeQuery();
-			String res="<h1>Customers List</h1></br>";
-			while (rs.next()) {
-			     res=res+"CustomerId: "+rs.getInt("CUST_ID") + "  Customer Name: "+ rs.getString("NAME")+"  Age: "+rs.getInt("Age")+"</br>";
-			} 
-			rs.close();
-			return res;
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
-			}
+			hostname = "Hello World from " + InetAddress.getLocalHost().getHostName().toString();
+		} catch (UnknownHostException ex) {
+			hostname = "error";
 		}
 	}
 
+	@PostMapping
+	public ResponseEntity<?> create(@RequestBody PersonaEntradaDto personaEntradaDto) {
+		try {
+
+			Optional<Persona> clienteEncontrado = service
+					.obtenerPorIdentificacion(personaEntradaDto.getIdentificacion());
+			if (clienteEncontrado.isPresent()) {
+				return new ResponseEntity<>("Cliente ya se encuentra registrado", HttpStatus.BAD_REQUEST);
+			} else {
+				Persona cliente = new Persona();
+				cliente.setNombre(personaEntradaDto.getNombre());
+				cliente.setIdentificacion(personaEntradaDto.getIdentificacion());
+				Persona personaGuardado = service.create(cliente);
+				return new ResponseEntity<Persona>(personaGuardado, HttpStatus.CREATED);
+			}
+		} catch (Exception e) {
+			log.error("Por favor comuniquese con el administrador", e);
+			return new ResponseEntity<>("Por favor comuniquese con el administrador", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping
+	public ResponseEntity<?> obtenerCliente(@RequestBody PersonaEntradaDto personaEntradaDto) {
+		try {
+			Optional<Persona> clienteEncontrado = service
+					.obtenerPorIdentificacion(personaEntradaDto.getIdentificacion());
+			if (clienteEncontrado.isPresent()) {
+				return new ResponseEntity<Persona>(clienteEncontrado.get(), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>("No existe la persona con el parametro", HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			log.error("Por favor comuniquese con el administrador", e);
+			return new ResponseEntity<>("Por favor comuniquese con el administrador", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }
