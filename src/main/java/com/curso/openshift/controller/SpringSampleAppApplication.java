@@ -1,4 +1,4 @@
-package com.example;
+package com.curso.openshift.controller;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
