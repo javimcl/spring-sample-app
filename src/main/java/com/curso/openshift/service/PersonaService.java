@@ -5,8 +5,6 @@ package com.curso.openshift.service;
 
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
-
 import com.curso.openshift.model.Persona;
 
 /**
@@ -19,8 +17,9 @@ import com.curso.openshift.model.Persona;
  *          [$Author: Javier Lucero $, $Date: 25 abr. 2022 $]
  *          </p>
  */
-@Component
 public interface PersonaService {
+	
+	
 	Persona create(Persona cliente);
 
 	Optional<Persona> obtenerPorIdentificacion(String identificacion);

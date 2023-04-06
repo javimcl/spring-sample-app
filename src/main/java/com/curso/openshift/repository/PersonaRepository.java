@@ -19,6 +19,7 @@ import com.curso.openshift.model.Persona;
  *          [$Author: Javier Lucero $, $Date: 25 abr. 2022 $]
  *          </p>
  */
+
 public interface PersonaRepository extends JpaRepository<Persona, Long> {
 
 	Optional<Persona> findByIdentificacion(String id);

@@ -7,8 +7,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.curso.openshift.dto.PersonaEntradaDto;
 import com.curso.openshift.model.Persona;
 import com.curso.openshift.service.PersonaService;
-
-@SpringBootApplication
-public class SpringSampleAppApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(SpringSampleAppApplication.class, args);
-	}
-}
 
 @RestController
 @RequestMapping("/")

@@ -23,7 +23,6 @@ import com.curso.openshift.service.PersonaService;
  *          [$Author: Javier Lucero $, $Date: 25 abr. 2022 $]
  *          </p>
  */
-@Transactional
 @Service
 public class PersonaServiceImpl implements PersonaService {
 
