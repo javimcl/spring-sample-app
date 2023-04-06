@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.curso.openshift.model.Persona;
 import com.curso.openshift.repository.PersonaRepository;
@@ -22,6 +23,7 @@ import com.curso.openshift.service.PersonaService;
  *          [$Author: Javier Lucero $, $Date: 25 abr. 2022 $]
  *          </p>
  */
+@Transactional
 @Service
 public class PersonaServiceImpl implements PersonaService {
 
