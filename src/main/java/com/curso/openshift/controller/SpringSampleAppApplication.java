@@ -46,10 +46,11 @@ class HomeRestController {
 			if (clienteEncontrado.isPresent()) {
 				return new ResponseEntity<>("Cliente ya se encuentra registrado", HttpStatus.BAD_REQUEST);
 			} else {
-				Persona cliente = new Persona();
-				cliente.setNombre(personaEntradaDto.getNombre());
-				cliente.setIdentificacion(personaEntradaDto.getIdentificacion());
-				Persona personaGuardado = service.create(cliente);
+				Persona persona = new Persona();
+				persona.setNombre(personaEntradaDto.getNombre());
+				persona.setIdentificacion(personaEntradaDto.getIdentificacion());
+				persona.setApellido(personaEntradaDto.getApellido());
+				Persona personaGuardado = service.create(persona);
 				return new ResponseEntity<Persona>(personaGuardado, HttpStatus.CREATED);
 			}
 		} catch (Exception e) {
