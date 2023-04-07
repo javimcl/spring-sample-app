@@ -1,5 +1,5 @@
-delete from customer; 
-insert into customer (name,age) values ('Joe Psql', 88);
-insert into customer (name,age) values ('Jack Psql', 54);
-insert into customer (name,age) values ('Ann Psql', 32);
+delete from persona; 
+insert into persona (identificacion,nombre, apellido) values ('1718909890','Joe', 'Hsql');
+insert into persona (identificacion,nombre, apellido) values ('1718909890','Jack', 'Hsql');
+insert into persona (identificacion,nombre, apellido) values ('1718909890','Ann', 'Hsql');
 

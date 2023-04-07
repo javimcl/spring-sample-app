@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS customer (
-   CUST_ID serial primary key,   
-   NAME varchar(100) NOT NULL,
-   AGE integer NOT NULL);
+CREATE TABLE IF NOT EXISTS persona (
+   id serial primary key,   
+   identificacion varchar(100) NOT NULL,
+   nombre varchar(100) NOT NULL,
+   apellido varchar(100) NOT NULL,);
